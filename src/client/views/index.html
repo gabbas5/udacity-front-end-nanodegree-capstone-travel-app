@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Travel App</title>
+    </head>
+    <body>
+        <header>
+            <div class="">
+                Travel App
+            </div>
+        </header>
+        <main>
+            <section>
+                <form class="" onsubmit="return Client.handleSubmit(event)">
+                    <!-- TODO: Decide on label styles for the form, refer to refactoring UI videos for some help -->
+                    <label for="destination">Holiday Destination</label>
+                    <input id="destination" type="text" name="destination" value="" placeholder="" required>
+
+                    <label for="departureDate">Departure Date</label>
+                    <input id="departureDate" type="date" name="departureDate" required>
+
+                    <input type="submit" name="" value="submit">
+                </form>
+            <section>
+            <section>
+                <div id="results">
+                    <div id="tripInfo">
+                    </div>
+                </div>
+                <div id="savedTrips"></div>
+            </section>
+        </main>
+        <footer>
+            <p>This is a footer</p>
+        </footer>
+        <script>
+            // Check that service workers are supported
+            // if ('serviceWorker' in navigator) {
+            //     // Use the window load event to keep the page load performant
+            //     window.addEventListener('load', () => {
+            //         navigator.serviceWorker.register('/service-worker.js');
+            //     });
+            // }
+        </script>
+    </body>
+</html>
