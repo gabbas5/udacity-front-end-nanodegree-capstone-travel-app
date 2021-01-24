@@ -1,6 +1,6 @@
 const getGeonameData = async (destination) => {
     const requestBody = {
-        BASE_URL: `http://api.geonames.org/searchJSON?formatted=true&q=${destination.value}`,
+        BASE_URL: `http://api.geonames.org/searchJSON?formatted=true&q=${destination}`,
     };
 
     const geonameResponse = await fetch('/geo-name-locations', {

@@ -1,7 +1,12 @@
 header {
-  display: flex;
-  justify-content: space-between;
-  padding: 30px 60px;
-  background: #f0f4f8;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 60px;
+    background: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 500;
 }

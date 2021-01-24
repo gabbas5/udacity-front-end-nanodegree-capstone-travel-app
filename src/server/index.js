@@ -1,6 +1,3 @@
-// const dotenv = require("dotenv");
-// dotenv.config();
-// var path = require("path");
 const express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
@@ -42,11 +39,10 @@ app.post('/geo-name-locations', storeController.geoNameLocations);
 app.post('/weather-bit-forecast', storeController.weatherBitForecast);
 app.post('/pixabay-images', storeController.pixabayImages);
 
-// TODO: This is where it may be a better approach to add middlewhere
+// TODO: This is where it may be a better approach to add middlewhere?
+// Should I also create controllers for these?
 app.post('/save-trip', (req, res) => {
     const trip = { ...req.body };
-    console.log(trip);
-
     savedTrips.push(trip);
     res.send(trip);
 });
@@ -56,14 +52,11 @@ app.get('/get-saved-trips', (req, res) => {
 });
 
 app.post('/remove-saved-trip', (req, res) => {
-    console.log('Request Body: ', req.body);
     const tripId = req.body.id;
 
     savedTrips = savedTrips.filter((savedTrip) => {
-        console.log('savedTripID: ', savedTrip.id);
         return savedTrip.id != tripId;
     });
-    console.log('Saved Trips Updated To: ', savedTrips);
 
     res.json(savedTrips);
 });

@@ -1,39 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Travel App</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;1,300;1,500&display=swap"
+            rel="stylesheet"
+        />
+        <script
+            src="https://kit.fontawesome.com/aca2d893d4.js"
+            crossorigin="anonymous"
+        ></script>
+        <title>TRAVEL APP</title>
     </head>
     <body>
         <header>
-            <div class="">
-                Travel App
-            </div>
+            <div class="logo-text">TRAVEL APP</div>
         </header>
         <main>
-            <section>
-                <form class="" onsubmit="return Client.handleSubmit(event)">
-                    <!-- TODO: Decide on label styles for the form, refer to refactoring UI videos for some help -->
-                    <label for="destination">Holiday Destination</label>
-                    <input id="destination" type="text" name="destination" value="" placeholder="" required>
+            <section class="hero">
+                <h2>Find Your Next Adventure</h2>
+            </section>
 
-                    <label for="departureDate">Departure Date</label>
-                    <input id="departureDate" type="date" name="departureDate" required>
-
-                    <input type="submit" name="" value="submit">
+            <section class="search">
+                <form
+                    class="search-form"
+                    onsubmit="return Client.handleSubmit(event)"
+                >
+                    <label class="search-form__destination" for="destination"
+                        >Holiday Destination
+                        <input
+                            id="destination"
+                            type="text"
+                            name="destination"
+                            value=""
+                            placeholder=""
+                            required
+                        />
+                    </label>
+                    <label
+                        class="search-form__departure-date"
+                        for="departureDate"
+                        >Departure Date
+                        <input
+                            id="departureDate"
+                            type="date"
+                            name="departureDate"
+                            required
+                        />
+                    </label>
+                    <input
+                        class="btn search-form__btn-search"
+                        type="submit"
+                        name=""
+                        value="Search"
+                    />
                 </form>
-            <section>
-            <section>
+            </section>
+
+            <section class="results">
                 <div id="results">
-                    <div id="tripInfo">
-                    </div>
+                    <div id="tripInfo"></div>
                 </div>
+            </section>
+            <section class="savedTrips">
+                <h2>Saved Trips</h2>
+                <p>You have no saved trips, get searching!...</p>
                 <div id="savedTrips"></div>
             </section>
         </main>
         <footer>
-            <p>This is a footer</p>
+            <p>Travel App &copy;</p>
         </footer>
         <script>
             // Check that service workers are supported

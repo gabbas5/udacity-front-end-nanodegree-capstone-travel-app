@@ -1,8 +1,12 @@
 footer {
-  background: #334e68;
-  color: #fff;
-  height: 70px;
-  display: grid;
-  align-content: center;
-  justify-content: center;
+    background: hsl(209, 61%, 16%);
+    color: hsl(212, 33%, 89%);
+    height: 96px;
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    margin-top: 96px;
+    & p {
+        margin-bottom: 0;
+    }
 }

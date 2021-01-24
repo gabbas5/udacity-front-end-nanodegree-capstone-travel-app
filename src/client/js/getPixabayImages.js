@@ -7,7 +7,6 @@ const getPixabayImages = async (
     destination
 ) => {
     const pixabayDestination = destination.split(' ').join('+');
-    console.log('pixabayDestination: ', pixabayDestination);
 
     const pixabayRequestBody = {
         BASE_URL: `https://pixabay.com/api/?q=${pixabayDestination}&image_type=${photoType}&category=${category}&safesearch=${isSafeSearch}&order=${orderBy}&orientation=${imageFormat}`,

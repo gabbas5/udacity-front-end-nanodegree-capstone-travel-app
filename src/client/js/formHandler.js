@@ -1,13 +1,13 @@
 let projectData = {};
 const savedTrips = document.getElementById('savedTrips');
 
-// Create a seperate module
+// Create a seperate module?
 const calcuateDaysToGo = (futureDate) => {
     const daysCountdown = new Date(futureDate) - new Date();
     return new Date(daysCountdown) / (24 * 3600 * 1000);
 };
 
-// TODO: Move to separate file, view template
+// TODO: Move to separate file, view template?
 const renderHTMLTemplate = (
     destinationImage,
     destination,
@@ -24,7 +24,11 @@ const renderHTMLTemplate = (
         </div>
         <div class="card__body">
             <div class="card__text">
-                <h2>${destination}</h2>
+                ${
+                    save
+                        ? '<h2>' + destination + '</h2>'
+                        : '<h4>' + destination + '</h4>'
+                }
                 <p>Your trip is in ${Math.floor(daysToGo)} days time</p>
             </div>
             <div class="card__weather">
@@ -38,11 +42,22 @@ const renderHTMLTemplate = (
                     <p>${weatherData[0].weather.description}</p>
                 </div>
             </div>
-            <div class="card__footer">
-                <button class="btn btn__save" type="button" data-trip-id="${savedTripId}" onclick="return ${
-        save ? 'Client.saveTrip()' : 'Client.removeTrip()'
-    }">${save ? 'Save' : 'Remove'} Trip</button>
-            </div>
+        </div>
+        <div class="card__footer">
+            <button 
+                class="btn btn__save" 
+                type="button" 
+                data-trip-id="${savedTripId}" 
+                onclick="return ${
+                    save ? 'Client.saveTrip()' : 'Client.removeTrip()'
+                }">
+                    ${
+                        save
+                            ? '<i class="far fa-heart"></i>'
+                            : '<i class="far fa-trash-alt"></i>'
+                    }
+                    ${save ? 'Save' : 'Remove'} Trip
+            </button>
         </div>
     `;
 };
@@ -54,7 +69,6 @@ const renderHTMLTemplate = (
 
     if (localStorageSavedTrips != null) {
         let documentFragment = new DocumentFragment();
-        console.log('localStorageSavedTrips: ', localStorageSavedTrips);
         for (let localStorageSavedTrip of localStorageSavedTrips) {
             const cardElement = document.createElement('div');
             cardElement.classList.add('card', 'card--column');
@@ -94,8 +108,7 @@ const handleSubmit = async (event) => {
 
     try {
         // Get location details from GeoNamesData
-        geonameData = await Client.getGeonameData(destination);
-        console.log('geonameData: ', geonameData);
+        geonameData = await Client.getGeonameData(destination.value);
         if (geonameData.geonames.length === 0) return;
 
         // Set latitude and longitude co-ords for the destination
@@ -105,7 +118,6 @@ const handleSubmit = async (event) => {
         const daysToGo = calcuateDaysToGo(departureDate.value);
         // Get weather forecast from WeatherBit
         weatherData = await Client.getWeatherBitData(daysToGo, lat, lon);
-        console.log('weatherData: ', weatherData);
 
         pixabayData = await Client.getPixabayImages(
             'photo',
@@ -115,7 +127,6 @@ const handleSubmit = async (event) => {
             'horizontal',
             destination.value
         );
-        console.log('pixabayData: ', pixabayData);
 
         // Now we have all of the data, set the HTML
         let destinationImage = 'images/placeholder.jpg';
@@ -143,7 +154,6 @@ const handleSubmit = async (event) => {
             weatherData: [...weatherData.data],
             pixabayData: { ...pixabayData.hits[0] },
         };
-        console.log('projectData: ', projectData);
     } catch (error) {
         console.error(error);
     }
@@ -158,11 +168,8 @@ const saveTrip = async () => {
     }
 
     postProjectdata('/save-trip', projectData).then((savedTrip) => {
-        console.log('Data Saved!');
-        console.log('Result: ', savedTrip);
         // Put the object into storage
         localStorage.setItem('tripData', JSON.stringify(tripData));
-        console.log('Local storage tripData: ', tripData);
         // Now we have all of the data, set the HTML
         const daysToGo = calcuateDaysToGo(savedTrip.departureDate);
         const destinationImage = savedTrip.pixabayData.webformatURL;
@@ -180,14 +187,12 @@ const saveTrip = async () => {
             false
         );
 
-        savedTrips.appendChild(cardElement);
+        savedTrips.prepend(cardElement);
     });
 };
 
-// TODO:
 const removeTrip = async (url = '/remove-saved-trip', data = {}) => {
-    console.log(event);
-    const parentCardElelemt = event.target.closest('.card');
+    const parentCardElelement = event.target.closest('.card');
     // TODO: Could I replace this whis event bubbling?
     const tripId = event.target.dataset.tripId;
     data = { id: tripId };
@@ -199,23 +204,19 @@ const removeTrip = async (url = '/remove-saved-trip', data = {}) => {
         body: JSON.stringify(data),
     });
     const tripData = await response.json();
-    console.log('tripData: ', tripData);
 
-    // TODO: Update local storage
+    // Update local storage
     localStorage.setItem('tripData', JSON.stringify(tripData));
 
-    parentCardElelemt.remove();
+    parentCardElelement.remove();
 };
 
-// Check if trip is already saved
 const getTripData = async () => {
     const response = await fetch('/get-saved-trips');
     const tripData = await response.json();
     return tripData;
 };
 
-// Create a route and controller for this?
-/* Function to POST data */
 const postProjectdata = async (url = '', data = {}) => {
     const response = await fetch(url, {
         method: 'POST',
@@ -231,7 +232,6 @@ const isTripSaved = (tripToSaveID, savedTrips) => {
     if (savedTrips.length !== 0) {
         for (let trip of savedTrips) {
             if (trip.geonameData.geonameId === tripToSaveID) {
-                console.log('Trip already saved!');
                 return true;
             }
         }
