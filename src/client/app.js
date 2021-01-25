@@ -4,13 +4,7 @@ import { getGeonameData } from './js/getGeonameData';
 import { getWeatherBitData } from './js/getWeatherBitData';
 import { getPixabayImages } from './js/getPixabayImages';
 
-import './styles/resets.scss';
-import './styles/base.scss';
-import './styles/form.scss';
-import './styles/footer.scss';
-import './styles/header.scss';
-import './styles/main.scss';
-import './styles/card.scss';
+import './styles/index.scss';
 
 export {
     validateUserInput,

@@ -33,7 +33,10 @@ module.exports = {
             filename: './index.html',
         }),
         new CopyPlugin({
-            patterns: [{ from: 'src/client/icons', to: 'icons' }],
+            patterns: [
+                { from: 'src/client/icons', to: 'icons' },
+                { from: 'src/client/images', to: 'images' },
+            ],
         }),
         new CleanWebpackPlugin({
             // Simulate the removal of files

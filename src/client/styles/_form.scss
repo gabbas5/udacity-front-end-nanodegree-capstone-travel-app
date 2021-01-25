@@ -6,30 +6,21 @@
     margin-top: -120px;
     z-index: 100;
     position: relative;
-    // border: 1px solid #f0f4f8;
-    border-radius: 3px;
+    border-radius: $border-radius;
     padding: 20px;
-    background: #fff;
+    background: $white;
     box-shadow: 0 1px 3px hsla(0%, 0%, 0%, 0.2);
     label {
         margin-bottom: 15px;
     }
-    &__destination {
+    &__destination,
+    &__departure-date {
         flex: 1 1 auto;
         & input {
             margin-top: 4px;
             height: 52px;
-            background: hsl(212, 33%, 89%);
-            border: 2px solid hsl(212, 33%, 89%);
-        }
-    }
-    &__departure-date {
-        flex: 1 auto;
-        & input {
-            margin-top: 4px;
-            height: 52px;
-            background: hsl(212, 33%, 89%);
-            border: 2px solid hsl(212, 33%, 89%);
+            background: $blue-grey-100;
+            border: 2px solid $blue-grey-100;
         }
     }
     &__btn-search {
@@ -37,13 +28,12 @@
         flex: 1 1 auto;
         font-size: 16px;
         align-self: flex-end;
-        margin-bottom: 2px;
-        color: hsl(15, 86%, 30%);
-        background: hsl(44, 92%, 63%);
+        color: $yellow-vivid-900;
+        background: $yellow-vivid-400;
         justify-content: center;
         padding: 18px 15px;
         &:hover {
-            background: hsl(42, 87%, 55%);
+            background: $yellow-vivid-500;
         }
     }
 }

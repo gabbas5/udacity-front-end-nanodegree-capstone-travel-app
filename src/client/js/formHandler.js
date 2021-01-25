@@ -3,21 +3,21 @@ const savedTrips = document.getElementById('savedTrips');
 
 // Create a seperate module?
 const calcuateDaysToGo = (futureDate) => {
-    const daysCountdown = new Date(futureDate) - new Date();
-    return new Date(daysCountdown) / (24 * 3600 * 1000);
+    const differenceInDays = new Date(futureDate) - new Date();
+    let daysToGo = new Date(differenceInDays) / (24 * 3600 * 1000);
+    daysToGo = Number(Math.round(daysToGo));
+    return daysToGo;
 };
 
 // TODO: Move to separate file, view template?
 const renderHTMLTemplate = (
     destinationImage,
     destination,
-    departureDate,
+    daysToGo,
     weatherData,
     savedTripId,
     save = true
 ) => {
-    // Calcuate the number of days to go
-    const daysToGo = calcuateDaysToGo(departureDate);
     return `
         <div class="card__image">
             <img src="${destinationImage}">
@@ -29,11 +29,11 @@ const renderHTMLTemplate = (
                         ? '<h2>' + destination + '</h2>'
                         : '<h4>' + destination + '</h4>'
                 }
-                <p>Your trip is in ${Math.floor(daysToGo)} days time</p>
+                <p>Your trip is in ${daysToGo} days time</p>
             </div>
             <div class="card__weather">
                 <div class="card__weather--icon">
-                    <img src='icons/${weatherData[0].weather.icon}.png'>
+                    <img src="icons/${weatherData[0].weather.icon}.png" alt="">
                 </div>
                 <div class="card__weather--info">
                     <p class="temp">
@@ -73,10 +73,15 @@ const renderHTMLTemplate = (
             const cardElement = document.createElement('div');
             cardElement.classList.add('card', 'card--column');
 
+            // Calcuate the number of days to go
+            const daysToGo = calcuateDaysToGo(
+                localStorageSavedTrip.departureDate
+            );
+
             cardElement.innerHTML = renderHTMLTemplate(
                 localStorageSavedTrip.pixabayData.webformatURL,
                 localStorageSavedTrip.destination,
-                localStorageSavedTrip.departureDate,
+                daysToGo,
                 localStorageSavedTrip.weatherData,
                 localStorageSavedTrip.id,
                 false
@@ -137,7 +142,7 @@ const handleSubmit = async (event) => {
         const innerCard = renderHTMLTemplate(
             destinationImage,
             destination.value,
-            departureDate.value,
+            daysToGo,
             weatherData.data,
             geonameData.geonames.id
         );
@@ -167,12 +172,14 @@ const saveTrip = async () => {
         return;
     }
 
-    postProjectdata('/save-trip', projectData).then((savedTrip) => {
+    // I think I need to wait for the response here...?
+    postProjectdata('/save-trip', projectData).then(async (savedTrip) => {
         // Put the object into storage
-        localStorage.setItem('tripData', JSON.stringify(tripData));
+        const updatedTripData = await getTripData();
+        localStorage.setItem('tripData', JSON.stringify(updatedTripData));
         // Now we have all of the data, set the HTML
         const daysToGo = calcuateDaysToGo(savedTrip.departureDate);
-        const destinationImage = savedTrip.pixabayData.webformatURL;
+        let destinationImage = savedTrip.pixabayData.webformatURL;
         if (!destinationImage) destinationImage = 'images/placeholder.jpg';
 
         const cardElement = document.createElement('div');
