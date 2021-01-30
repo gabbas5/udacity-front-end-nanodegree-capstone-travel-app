@@ -39,8 +39,6 @@ app.post('/geo-name-locations', storeController.geoNameLocations);
 app.post('/weather-bit-forecast', storeController.weatherBitForecast);
 app.post('/pixabay-images', storeController.pixabayImages);
 
-// TODO: This is where it may be a better approach to add middlewhere?
-// Should I also create controllers for these?
 app.post('/save-trip', (req, res) => {
     const trip = { ...req.body };
     savedTrips.push(trip);
@@ -60,3 +58,5 @@ app.post('/remove-saved-trip', (req, res) => {
 
     res.json(savedTrips);
 });
+
+module.exports = app;

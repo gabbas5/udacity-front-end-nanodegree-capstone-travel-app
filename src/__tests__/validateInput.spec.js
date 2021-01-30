@@ -1,11 +1,13 @@
-import { validateUserInput } from "../client/js/validateUserInput";
+import { validateUserInput } from '../client/js/validateUserInput';
 
-describe("Validate URL function", () => {
-  test("It should return either true or false depending on if the URL entered is valid", () => {
-    const validURL = "http://www.google.com";
-    expect(validateUserInput(validURL)).toBeTruthy();
+describe('Validate URL function', () => {
+    test('It should return either true or false depending on if the URL entered is valid', () => {
+        const validFormInputElement = document.createElement('input');
+        validFormInputElement.value = 'Manchester';
+        expect(validateUserInput([validFormInputElement])).toBeTruthy();
 
-    const invalidURL = "";
-    expect(validateUserInput(invalidURL)).toBeFalsy();
-  });
+        const invalidFormInputElement = document.createElement('input');
+        invalidFormInputElement.value = '';
+        expect(validateUserInput([invalidFormInputElement])).toBeFalsy();
+    });
 });

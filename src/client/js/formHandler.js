@@ -1,97 +1,10 @@
 let projectData = {};
 const savedTrips = document.getElementById('savedTrips');
 
-// Create a seperate module?
-const calcuateDaysToGo = (futureDate) => {
-    const differenceInDays = new Date(futureDate) - new Date();
-    let daysToGo = new Date(differenceInDays) / (24 * 3600 * 1000);
-    daysToGo = Number(Math.round(daysToGo));
-    return daysToGo;
-};
-
-// TODO: Move to separate file, view template?
-const renderHTMLTemplate = (
-    destinationImage,
-    destination,
-    daysToGo,
-    weatherData,
-    savedTripId,
-    save = true
-) => {
-    return `
-        <div class="card__image">
-            <img src="${destinationImage}">
-        </div>
-        <div class="card__body">
-            <div class="card__text">
-                ${
-                    save
-                        ? '<h2>' + destination + '</h2>'
-                        : '<h4>' + destination + '</h4>'
-                }
-                <p>Your trip is in ${daysToGo} days time</p>
-            </div>
-            <div class="card__weather">
-                <div class="card__weather--icon">
-                    <img src="icons/${weatherData[0].weather.icon}.png" alt="">
-                </div>
-                <div class="card__weather--info">
-                    <p class="temp">
-                        ${weatherData[0].temp}<sup>&#8451;</sup>
-                    </p>
-                    <p>${weatherData[0].weather.description}</p>
-                </div>
-            </div>
-        </div>
-        <div class="card__footer">
-            <button 
-                class="btn btn__save" 
-                type="button" 
-                data-trip-id="${savedTripId}" 
-                onclick="return ${
-                    save ? 'Client.saveTrip()' : 'Client.removeTrip()'
-                }">
-                    ${
-                        save
-                            ? '<i class="far fa-heart"></i>'
-                            : '<i class="far fa-trash-alt"></i>'
-                    }
-                    ${save ? 'Save' : 'Remove'} Trip
-            </button>
-        </div>
-    `;
-};
-
-// TODO: Move to a separate file?
-(function checkLocalStorage() {
-    // Retrieve the object from storage
-    const localStorageSavedTrips = JSON.parse(localStorage.getItem('tripData'));
-
-    if (localStorageSavedTrips != null) {
-        let documentFragment = new DocumentFragment();
-        for (let localStorageSavedTrip of localStorageSavedTrips) {
-            const cardElement = document.createElement('div');
-            cardElement.classList.add('card', 'card--column');
-
-            // Calcuate the number of days to go
-            const daysToGo = calcuateDaysToGo(
-                localStorageSavedTrip.departureDate
-            );
-
-            cardElement.innerHTML = renderHTMLTemplate(
-                localStorageSavedTrip.pixabayData.webformatURL,
-                localStorageSavedTrip.destination,
-                daysToGo,
-                localStorageSavedTrip.weatherData,
-                localStorageSavedTrip.id,
-                false
-            );
-
-            documentFragment.appendChild(cardElement);
-        }
-        savedTrips.appendChild(documentFragment);
-    }
-})();
+// Render saved trips
+document.addEventListener('DOMContentLoaded', () => {
+    Client.renderSavedTrips();
+});
 
 const handleSubmit = async (event) => {
     event.preventDefault();
@@ -120,7 +33,7 @@ const handleSubmit = async (event) => {
         const lat = geonameData.geonames[0].lat;
         const lon = geonameData.geonames[0].lng;
 
-        const daysToGo = calcuateDaysToGo(departureDate.value);
+        const daysToGo = Client.calculateDaysToGo(departureDate.value);
         // Get weather forecast from WeatherBit
         weatherData = await Client.getWeatherBitData(daysToGo, lat, lon);
 
@@ -139,7 +52,7 @@ const handleSubmit = async (event) => {
             destinationImage = pixabayData.hits[0].webformatURL;
         }
 
-        const innerCard = renderHTMLTemplate(
+        const innerCard = Client.renderHTMLTemplate(
             destinationImage,
             destination.value,
             daysToGo,
@@ -178,14 +91,14 @@ const saveTrip = async () => {
         const updatedTripData = await getTripData();
         localStorage.setItem('tripData', JSON.stringify(updatedTripData));
         // Now we have all of the data, set the HTML
-        const daysToGo = calcuateDaysToGo(savedTrip.departureDate);
+        const daysToGo = Client.calculateDaysToGo(savedTrip.departureDate);
         let destinationImage = savedTrip.pixabayData.webformatURL;
         if (!destinationImage) destinationImage = 'images/placeholder.jpg';
 
         const cardElement = document.createElement('div');
         cardElement.classList.add('card', 'card--column');
 
-        cardElement.innerHTML = renderHTMLTemplate(
+        cardElement.innerHTML = Client.renderHTMLTemplate(
             destinationImage,
             savedTrip.destination,
             daysToGo,
@@ -200,7 +113,7 @@ const saveTrip = async () => {
 
 const removeTrip = async (url = '/remove-saved-trip', data = {}) => {
     const parentCardElelement = event.target.closest('.card');
-    // TODO: Could I replace this whis event bubbling?
+    // Could I update this to take advantage of event bubbling? I could convert the trip HTML to a list of cards, perhaps more semantic as well...
     const tripId = event.target.dataset.tripId;
     data = { id: tripId };
     const response = await fetch(url, {

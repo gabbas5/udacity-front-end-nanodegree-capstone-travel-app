@@ -1,5 +1,7 @@
 const dotenv = require('dotenv')
 dotenv.config()
+
+// TODO: Maybe these could be in an env file again to share with the tests as well?
 const GEONAMES_USERNAME = process.env.GEONAMES_USERNAME
 const WEATHERBIT_API_KEY = process.env.WEATHERBIT_API_KEY
 const PIXABAY_API_KEY = process.env.PIXABAY_API_KEY
