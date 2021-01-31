@@ -23,6 +23,8 @@ module.exports = {
             '/save-trip': 'http://localhost:8081',
             '/get-saved-trips': 'http://localhost:8081',
             '/remove-saved-trip': 'http://localhost:8081',
+            '/save-search-result': 'http://localhost:8081',
+            '/get-search-result': 'http://localhost:8081',
         },
     },
     devtool: 'source-map',

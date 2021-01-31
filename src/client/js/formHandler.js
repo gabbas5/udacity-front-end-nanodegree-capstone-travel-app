@@ -1,7 +1,6 @@
-let projectData = {};
-const savedTrips = document.getElementById('savedTrips');
+const savedTripsSection = document.getElementById('savedTripsSection');
 
-// Render saved trips
+// Render saved trips, wait for the content to be loaded, otherwise Client is not defined
 document.addEventListener('DOMContentLoaded', () => {
     Client.renderSavedTrips();
 });
@@ -27,16 +26,21 @@ const handleSubmit = async (event) => {
     try {
         // Get location details from GeoNamesData
         geonameData = await Client.getGeonameData(destination.value);
+        // If there are no results from the getGeonameData, do not continue as the other API calls rely on the results from getGeonameData
+        // This could be improved in the future by giving some feedback to the user in the UI
         if (geonameData.geonames.length === 0) return;
 
         // Set latitude and longitude co-ords for the destination
         const lat = geonameData.geonames[0].lat;
         const lon = geonameData.geonames[0].lng;
 
+        // Calculate the number of days until the trip
         const daysToGo = Client.calculateDaysToGo(departureDate.value);
+
         // Get weather forecast from WeatherBit
         weatherData = await Client.getWeatherBitData(daysToGo, lat, lon);
 
+        // Get images from pixababy, the parameters below I have set as default, perhaps this could be improved in the future as well, with Galleries and experiment with different parameters
         pixabayData = await Client.getPixabayImages(
             'photo',
             'travel',
@@ -46,24 +50,8 @@ const handleSubmit = async (event) => {
             destination.value
         );
 
-        // Now we have all of the data, set the HTML
-        let destinationImage = 'images/placeholder.jpg';
-        if (pixabayData.hits.length > 0) {
-            destinationImage = pixabayData.hits[0].webformatURL;
-        }
-
-        const innerCard = Client.renderHTMLTemplate(
-            destinationImage,
-            destination.value,
-            daysToGo,
-            weatherData.data,
-            geonameData.geonames.id
-        );
-        tripInfo.innerHTML = `<div class="card">
-        ${innerCard}</div>
-        `;
-
-        projectData = {
+        // Save the search results to an object ready to be posted to the Express server
+        const projectData = {
             id: geonameData.geonames[0].geonameId,
             departureDate: departureDate.value,
             destination: destination.value,
@@ -72,24 +60,55 @@ const handleSubmit = async (event) => {
             weatherData: [...weatherData.data],
             pixabayData: { ...pixabayData.hits[0] },
         };
+
+        // Post the search results back to the Express server
+        postProjectdata('/save-search-result', projectData).then(
+            // Then render the returned result in the UI
+            async (searchResult) => {
+                // Set a default placeholder image
+                let destinationImage = 'images/placeholder.jpg';
+
+                // If we have an image from Pixabay then set this as the destinationImage instead
+                if (searchResult.pixabayData.webformatURL) {
+                    destinationImage = searchResult.pixabayData.webformatURL;
+                }
+
+                // Pass the search results to the render function, this will render them in the UI in a card style component
+                const innerCard = Client.renderHTMLTemplate(
+                    searchResult.pixabayData.webformatURL,
+                    searchResult.destination,
+                    daysToGo,
+                    searchResult.weatherData,
+                    searchResult.id
+                );
+
+                // Update the UI
+                tripInfo.innerHTML = `
+                    <div class="card">
+                        ${innerCard}
+                    </div>
+                `;
+            }
+        );
     } catch (error) {
         console.error(error);
     }
 };
 
 const saveTrip = async () => {
-    const tripData = await getTripData();
+    let savedTrips = await getSavedTrips();
+    const searchResult = await getSearchResult();
 
     // Check if the trip has alread been saved
-    if (isTripSaved(projectData.id, tripData)) {
+    if (isTripSaved(searchResult.id, savedTrips)) {
         return;
     }
 
     // I think I need to wait for the response here...?
-    postProjectdata('/save-trip', projectData).then(async (savedTrip) => {
+    postProjectdata('/save-trip', searchResult).then(async (savedTrip) => {
         // Put the object into storage
-        const updatedTripData = await getTripData();
-        localStorage.setItem('tripData', JSON.stringify(updatedTripData));
+        savedTrips = await getSavedTrips();
+        localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
         // Now we have all of the data, set the HTML
         const daysToGo = Client.calculateDaysToGo(savedTrip.departureDate);
         let destinationImage = savedTrip.pixabayData.webformatURL;
@@ -107,7 +126,7 @@ const saveTrip = async () => {
             false
         );
 
-        savedTrips.prepend(cardElement);
+        savedTripsSection.prepend(cardElement);
     });
 };
 
@@ -123,18 +142,24 @@ const removeTrip = async (url = '/remove-saved-trip', data = {}) => {
         },
         body: JSON.stringify(data),
     });
-    const tripData = await response.json();
+    const savedTrips = await response.json();
 
     // Update local storage
-    localStorage.setItem('tripData', JSON.stringify(tripData));
+    localStorage.setItem('savedTrips', JSON.stringify(savedTrips));
 
     parentCardElelement.remove();
 };
 
-const getTripData = async () => {
+const getSearchResult = async () => {
+    const response = await fetch('/get-search-result');
+    const searchResult = await response.json();
+    return searchResult;
+};
+
+const getSavedTrips = async () => {
     const response = await fetch('/get-saved-trips');
-    const tripData = await response.json();
-    return tripData;
+    const savedTrips = await response.json();
+    return savedTrips;
 };
 
 const postProjectdata = async (url = '', data = {}) => {

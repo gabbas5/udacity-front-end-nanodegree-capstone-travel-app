@@ -1,3 +1,5 @@
+// This function will render the trips details in a card format
+// Styling will be different for saved trips and the trip search result, this can be set using the save parameter
 const renderHTMLTemplate = (
     destinationImage,
     destination,

@@ -1,6 +1,10 @@
+// This function will check local storage for any saved trips
+// Then render any trips to the UI using the renderHTMLTemplate function
 const renderSavedTrips = () => {
     // Retrieve the object from storage
-    const localStorageSavedTrips = JSON.parse(localStorage.getItem('tripData'));
+    const localStorageSavedTrips = JSON.parse(
+        localStorage.getItem('savedTrips')
+    );
 
     if (localStorageSavedTrips != null) {
         let documentFragment = new DocumentFragment();
@@ -24,7 +28,7 @@ const renderSavedTrips = () => {
 
             documentFragment.appendChild(cardElement);
         }
-        savedTrips.appendChild(documentFragment);
+        savedTripsSection.appendChild(documentFragment);
     }
 };
 
